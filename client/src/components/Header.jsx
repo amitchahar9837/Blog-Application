@@ -11,7 +11,7 @@ const Header = () => {
         className="self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white flex items-center"
       >
         <span className="px-2 py-1 bg-gradient-to-r from from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white flex items-center">
-          Insight
+          Echo
         </span>
         Blog
       </Link>
