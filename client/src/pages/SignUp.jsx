@@ -50,11 +50,10 @@ const SignUp = () => {
             className="text-4xl font-bold dark:text-white flex items-center"
           >
             <span className="px-2 py-1 bg-gradient-to-r from from-indigo-500 via-purple-500 to-pink-500 rounded-lg text-white flex items-center">
-              Echo
-            </span>
+              Nexus            </span>
             Blog
           </Link>
-          <p className="text-sm mt-5">Welcome to Echo Blog, where words transform into windows of knowledge and inspiration.</p>
+          <p className="text-sm mt-5">Welcome to Nexus Blog, where words transform into windows of knowledge and inspiration.</p>
         </div>
 
         {/* Right */}
