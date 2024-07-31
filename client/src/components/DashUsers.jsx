@@ -15,9 +15,7 @@ export default function DashUsers() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await fetch(
-          `/api/user/getusers`
-        );
+        const res = await fetch(`/api/user/getusers`);
         const data = await res.json();
         if (res.ok) {
           setUsers(data.users);
@@ -38,9 +36,7 @@ export default function DashUsers() {
   const handleShowMore = async () => {
     const startIndex = users.length;
     try {
-      const res = await fetch(
-        `/api/user/getusers/?startIndex=${startIndex}`
-      );
+      const res = await fetch(`/api/user/getusers/?startIndex=${startIndex}`);
       const data = await res.json();
       if (res.ok) {
         setUsers((prev) => [...prev, ...data.users]);
@@ -56,19 +52,14 @@ export default function DashUsers() {
   const handleDeleteUser = async () => {
     setShowModal(false);
     try {
-      const res = await fetch(
-        `/api/user/deleteuser/${userIdToDelete}/${currentUser._id}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const res = await fetch(`/api/user/delete/${userIdToDelete}`, {
+        method: "DELETE",
+      });
       const data = await res.json();
       if (!res.ok) {
         console.log(data.message);
       } else {
-        setUsers((prev) =>
-          prev.filter((user) => user._id !== userIdToDelete)
-        );
+        setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
       }
     } catch (error) {
       console.log(error);
@@ -94,17 +85,21 @@ export default function DashUsers() {
                     {new Date(user.updatedAt).toLocaleDateString()}
                   </Table.Cell>
                   <Table.Cell className="flex items-center justify-center">
-                      <img
-                        src={user.profilePicture}
-                        alt={user.username}
-                        className="w-10 h-10 rounded-full object-cover bg-gray-500"
-                      />
+                    <img
+                      src={user.profilePicture}
+                      alt={user.username}
+                      className="w-10 h-10 rounded-full object-cover bg-gray-500"
+                    />
                   </Table.Cell>
-                  <Table.Cell>
-                    {user.username}
-                  </Table.Cell>
+                  <Table.Cell>{user.username}</Table.Cell>
                   <Table.Cell>{user.email}</Table.Cell>
-                  <Table.Cell className="flex justify-center">{user.isAdmin ? <FaCheck className="text-green-500"/> : <FaTimes className="text-red-500"/> }</Table.Cell>
+                  <Table.Cell className="flex justify-center">
+                    {user.isAdmin ? (
+                      <FaCheck className="text-green-500" />
+                    ) : (
+                      <FaTimes className="text-red-500" />
+                    )}
+                  </Table.Cell>
                   <Table.Cell>
                     <span
                       onClick={() => {
