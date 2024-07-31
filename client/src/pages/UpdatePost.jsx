@@ -1,6 +1,6 @@
 import { Alert, Button, Select, Spinner, TextInput } from "flowbite-react";
-import React, { useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { app } from "../firebase";
@@ -12,6 +12,7 @@ import {
   uploadBytesResumable,
   ref,
 } from "firebase/storage";
+import { useSelector } from "react-redux";
 
 export default function UpdatePost() {
   const [file, setFile] = useState(null);
@@ -22,6 +23,29 @@ export default function UpdatePost() {
   const [publishError, setPublishError] = useState(null);
   const [publishLoading, setPublishLoading] = useState(false);
   const navigate = useNavigate();
+  const { postId } = useParams();
+  const {currentUser} = useSelector(state => state.user);
+
+  useEffect(() => {
+    const fetchPost = async () =>{
+      try{
+        const res = await fetch(`/api/post/getposts?postId=${postId}`,{
+          method:'GET',
+        })
+        const data = await res.json();
+        if(!res.ok){
+          setPublishError(data.message)
+          return;
+        }if(res.ok){
+          setPublishError(null);
+          setFormData(data.posts[0]);
+        }
+      } catch(error){
+        console.log(error.message)
+      }
+    }
+    fetchPost();
+  }, [postId]);
 
   const handleUploadImage = async () => {
     try {
@@ -51,8 +75,8 @@ export default function UpdatePost() {
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setImageFileUploadProgress(null);
-            setFormData({ ...formData, image: downloadURL });
             fileInputRef.current.value = "";
+            setFormData({ ...formData, image: downloadURL });
           });
         }
       );
@@ -67,8 +91,8 @@ export default function UpdatePost() {
     e.preventDefault();
     try {
       setPublishLoading(true);
-      const res = await fetch("/api/post/create", {
-        method: "POST",
+      const res = await fetch(`/api/post/updatepost/${formData._id}/${currentUser._id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
@@ -92,7 +116,7 @@ export default function UpdatePost() {
   };
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
-      <h1 className="text-center text-3xl my-7 font-semibold">Create a post</h1>
+      <h1 className="text-center text-3xl my-7 font-semibold">Update post</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col sm:flex-row gap-4 justify-between">
           <TextInput
@@ -101,7 +125,7 @@ export default function UpdatePost() {
             placeholder="Title"
             required
             className="flex-1"
-            ref={fileInputRef}
+            value={formData.title}
             onChange={(e) =>
               setFormData({ ...formData, title: e.target.value })
             }
@@ -110,6 +134,7 @@ export default function UpdatePost() {
             onChange={(e) =>
               setFormData({ ...formData, category: e.target.value })
             }
+            value={formData.category}
           >
             <option value={"uncategorized"}>Select a category</option>
             <option value={"javascript"}>JavaScript</option>
@@ -124,6 +149,7 @@ export default function UpdatePost() {
           <TextInput
             type="file"
             accept="image/*"
+            ref={fileInputRef}
             onChange={(e) => setFile(e.target.files[0])}
           />
           <Button
@@ -168,16 +194,17 @@ export default function UpdatePost() {
           placeholder="Write something..."
           required
           className="h-72 mb-12"
+          value={formData.content}
           onChange={(value) => setFormData({ ...formData, content: value })}
         />
         <Button type="submit" gradientDuoTone={"purpleToPink"}>
           {publishLoading ? (
             <>
               <Spinner size={"sm"} />
-              <span className="pl-3">Publishing Post...</span>
+              <span className="pl-3">Updating Post...</span>
             </>
           ) : (
-            "Publish"
+            "Update post"
           )}
         </Button>
         {publishError && (
