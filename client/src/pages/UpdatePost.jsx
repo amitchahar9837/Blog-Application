@@ -24,26 +24,27 @@ export default function UpdatePost() {
   const [publishLoading, setPublishLoading] = useState(false);
   const navigate = useNavigate();
   const { postId } = useParams();
-  const {currentUser} = useSelector(state => state.user);
+  const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
-    const fetchPost = async () =>{
-      try{
-        const res = await fetch(`/api/post/getposts?postId=${postId}`,{
-          method:'GET',
-        })
+    const fetchPost = async () => {
+      try {
+        const res = await fetch(`/api/post/getposts?postId=${postId}`, {
+          method: "GET",
+        });
         const data = await res.json();
-        if(!res.ok){
-          setPublishError(data.message)
+        if (!res.ok) {
+          setPublishError(data.message);
           return;
-        }if(res.ok){
+        }
+        if (res.ok) {
           setPublishError(null);
           setFormData(data.posts[0]);
         }
-      } catch(error){
-        console.log(error.message)
+      } catch (error) {
+        console.log(error.message);
       }
-    }
+    };
     fetchPost();
   }, [postId]);
 
@@ -91,13 +92,16 @@ export default function UpdatePost() {
     e.preventDefault();
     try {
       setPublishLoading(true);
-      const res = await fetch(`/api/post/updatepost/${formData._id}/${currentUser._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        `/api/post/updatepost/${formData._id}/${currentUser._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const data = await res.json();
       setPublishLoading(false);
