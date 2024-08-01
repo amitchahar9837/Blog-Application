@@ -1,12 +1,14 @@
 import { Button, Spinner } from "flowbite-react";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { HiOutlineExclamation } from "react-icons/hi";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 export default function PostPage() {
   const { postSlug } = useParams();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [post, setPost] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -38,6 +40,16 @@ export default function PostPage() {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <Spinner size={"xl"} />
+      </div>
+    );
+  if (error)
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="flex items-center flex-col gap-3">
+        <HiOutlineExclamation className="text-6xl" />
+        <h2 className="text-2xl font-serif max-w-2xl mx-auto text-center lg:text-xl">Something went wrong!</h2>
+        <Button color={'gray'} pill onClick={()=>navigate(-1)} >Go Back</Button>
+        </div>
       </div>
     );
   return (
