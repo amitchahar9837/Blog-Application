@@ -3,12 +3,14 @@ import React, { useEffect, useState } from "react";
 import { HiOutlineExclamation } from "react-icons/hi";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import CommentSection from "../components/CommentSection";
+import PostCard from "../components/PostCard";
 
 export default function PostPage() {
   const { postSlug } = useParams();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [post, setPost] = useState(null);
+  const [recentArticles, setRecentArticles] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,6 +38,23 @@ export default function PostPage() {
     };
     fetchPost();
   }, [postSlug]);
+
+  useEffect(()=>{
+    const getRecentArticles = async () =>{
+      try {
+        const res = await fetch('/api/post/getposts?limit=3',{
+          method:"GET",
+        });
+        const data = await res.json();
+        if(res.ok){
+          setRecentArticles(data.posts);
+        }
+      } catch (error) {
+        console.log(error.message)
+      }
+    }
+    getRecentArticles();
+  },[])
 
   if (loading)
     return (
@@ -82,6 +101,16 @@ export default function PostPage() {
         dangerouslySetInnerHTML={{ __html: post && post.content }}
       ></div>
       <CommentSection postId={post && post._id} />
+      <div className="flex flex-col justify-center items-center mb-5">
+        <h1 className="mt-5 text-xl">Recent Articles</h1>
+        <div className="flex flex-wrap gap-5 mt-5 justify-center">
+          {
+            recentArticles && recentArticles.map(post => (
+              <PostCard key={post._id} post={post} />
+            ))
+          }
+        </div>
+      </div>
     </main>
   );
 }
