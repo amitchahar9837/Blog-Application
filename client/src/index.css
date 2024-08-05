@@ -39,3 +39,7 @@ body {
 .post-content a:hover{
   text-decoration: underline;
 }
+
+.noScrollbar::-webkit-scrollbar{
+  display: none;
+}
