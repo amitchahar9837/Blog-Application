@@ -12,7 +12,7 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: 'dist',  // This ensures the build output goes to 'client/dist'
+    outDir: 'client/dist',  // This ensures the build output goes to 'client/dist'
     rollupOptions: {
       output: {
         manualChunks(id) {
