@@ -6,33 +6,40 @@ import authRoutes from './routes/auth.route.js';
 import postRoutes from './routes/post.route.js';
 import commentRoutes from './routes/comment.route.js';
 import cookieParser from 'cookie-parser';
-import path from 'path'
+import path from 'path';
 
 dotenv.config();
 
-mongoose.connect(process.env.MONGOURI).then(() => {
-      console.log("database connected")
-}).catch((err) => {
-      console.log(err)
-})
-const __dirname = path.resolve();
 const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.listen(3000, () => {
-      console.log("server is running on port 3000")
-})
 
-app.use('/api/user', userRoutes)
+// Database Connection
+mongoose.connect(process.env.MONGOURI).then(() => {
+      console.log("Database connected");
+}).catch((err) => {
+      console.log(err);
+});
+
+// API Routes
+app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/post',postRoutes);
-app.use('/api/comment',commentRoutes)
+app.use('/api/post', postRoutes);
+app.use('/api/comment', commentRoutes);
 
-app.use(express.static(path.join(__dirname, '/client/dist')));
-app.get('*',(req,res)=>{
-      res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'))
-})    
+// Serve static files from the React frontend app
+const __dirname = path.resolve();
+app.use(express.static(path.join(__dirname, 'client', 'dist')));
 
+// Handles any requests that don't match the above routes
+app.get('*', (req, res) => {
+      res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+});
+
+// Error Handling Middleware
 app.use((err, req, res, next) => {
       const statusCode = err.statusCode || 500;
       const message = err.message || "Internal Server Error";
@@ -41,4 +48,9 @@ app.use((err, req, res, next) => {
             statusCode,
             message
       });
-}) 
+});
+
+// Start Server
+app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+});
